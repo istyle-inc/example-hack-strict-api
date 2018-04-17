@@ -24,15 +24,14 @@ class SampleResourcePayload {
   protected Vector<HalResource> $vec = Vector{};
 
   public function __construct(
-    protected ImmMap<string, mixed> $resource
+    protected ImmMap<mixed, mixed> $resource
   ) {}
 
   public function payload(): array<mixed, mixed> {
-    $hal = new HalResource(
-      $this->resource
-        ->filterWithKey(($k, $_) ==> $k != 'embedded')
-        ->toMap()
-    );
+    $map = $this->resource
+      ->filterWithKey(($k, $v) ==> $k != 'embedded')
+      ->toMap();
+    $hal = new HalResource($map);
     $hal->withLink(new Link(
       'self',
       new Vector([

@@ -45,10 +45,12 @@ return [
      * }      
      */
     \Nazg\Http\HttpMethod::GET => ImmMap {
-      '/' => ImmVector {
-        App\Middleware\ResponseAssertMiddleware::class,
-        App\Action\IndexAction::class
-      },
+      '/' => shape(
+        'middleware' => ImmVector {
+          App\Middleware\ResponseAssertMiddleware::class,
+          App\Action\IndexAction::class
+        },
+      )
     },
   },
 ];
