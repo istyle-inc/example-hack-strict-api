@@ -1,4 +1,4 @@
-<?hh
+<?hh // strict
 
 /**
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -16,35 +16,35 @@
  */
 namespace App\Module;
 
+use Nazg\Cache\Driver;
+use Nazg\Cache\CacheConfiguration;
+use Nazg\Foundation\Service;
 use Ytake\HHContainer\Scope;
 use Ytake\HHContainer\ServiceModule;
 use Ytake\HHContainer\FactoryContainer;
-use Nazg\Log\LogServiceModule;
-use Psr\Log\LoggerInterface;
-use Monolog\Logger;
-use Monolog\Monolog;
-use Monolog\Handler\StreamHandler;
 
-final class LoggerServiceModule extends LogServiceModule {
+final class CacheServiceModule extends \Nazg\Cache\CacheServiceModule {
 
   <<__Override>>
   public function provide(FactoryContainer $container): void {
-    $container->set(
-      LoggerInterface::class,
-      $container ==> $this->filesystemLogger(
-        $container->get(\Nazg\Foundation\Service::CONFIG),
-      ),
-      \Ytake\HHContainer\Scope::SINGLETON,
-    );
+    $config = $container->get(Service::CONFIG);
+    if (is_array($config)) {
+      $this->defaultDriver = $config[Service::CACHE]['driver'];
+    }
+    parent::provide($container);
   }
 
-  protected function filesystemLogger(mixed $config): LoggerInterface {
-    $monolog = new Logger("Nazg.Log");
+  <<__Override>>
+  protected function cacheConfigure(FactoryContainer $container): CacheConfiguration {
+    $config = $container->get(Service::CONFIG);
     if (is_array($config)) {
-      $monolog->pushHandler(
-        new StreamHandler($config['log_file'], Logger::DEBUG),
+      $drivers = $config[Service::CACHE]['drivers'];
+      return new CacheConfiguration(
+        $drivers[Driver::Memcached],
+        $drivers[Driver::File],
+        $drivers[Driver::Redis],
       );
     }
-    return $monolog;
+    return new CacheConfiguration();
   }
 }

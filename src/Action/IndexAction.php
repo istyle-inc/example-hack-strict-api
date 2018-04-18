@@ -18,6 +18,7 @@ namespace App\Action;
 
 use App\Responder\IndexResponder;
 use App\Payload\SampleResourcePayload;
+use App\AppService\CacheableArtcleCollection;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -25,27 +26,16 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class IndexAction implements MiddlewareInterface {
 
-  public function __construct(private IndexResponder $responder) {}
+  public function __construct(
+    private IndexResponder $responder,
+    private CacheableArtcleCollection $cache
+  ) {}
 
   public function process(
     ServerRequestInterface $request,
     RequestHandlerInterface $handler,
   ): ResponseInterface {
-    $resource = new SampleResourcePayload(new ImmMap([
-      'id' => 1234,
-      'name' => 'ytake',
-      'title' => 'type-assert for api response',
-      'embedded' => [
-        [
-          'name' => 'HHVM/Hack',
-          'url' => 'https://docs.hhvm.com/'
-        ],
-        [
-          'name' => 'zend-diactoros',
-          'url' => 'https://zendframework.github.io/zend-diactoros/',
-        ]
-      ]
-    ]));
+    $resource = new SampleResourcePayload($this->cache->run());
     return $this->responder->response(
       $resource->payload()
     );
