@@ -17,7 +17,6 @@
 namespace App\Action;
 
 use App\Responder\IndexResponder;
-use App\Payload\SampleResourcePayload;
 use App\AppService\CacheableArtcleCollection;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -35,9 +34,7 @@ final class IndexAction implements MiddlewareInterface {
     ServerRequestInterface $request,
     RequestHandlerInterface $handler,
   ): ResponseInterface {
-    $resource = new SampleResourcePayload($this->cache->run());
-    return $this->responder->response(
-      $resource->payload()
-    );
+    $resource = $this->cache->run();
+    return $this->responder->response($resource);
   }
 }

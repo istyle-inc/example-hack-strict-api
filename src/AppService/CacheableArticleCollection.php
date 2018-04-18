@@ -5,6 +5,7 @@ namespace App\AppService;
 use Nazg\HCache\Element;
 use Nazg\HCache\CacheProvider;
 use Psr\Log\LoggerInterface;
+use App\Payload\SampleResourcePayload;
 
 final class CacheableArtcleCollection {
 
@@ -15,12 +16,11 @@ final class CacheableArtcleCollection {
     private LoggerInterface $logger
   ) {}
 
-  public function run(): ImmMap<mixed, mixed> {
+  public function run(): array<mixed, mixed> {
     if($this->cacheProvider->contains($this->id)) {
       $this->logger->info('cache.hit', ['message' => 'cache']);
       $fetch = $this->cacheProvider->fetch($this->id);
-      invariant($fetch instanceof ImmMap, "type error");
-      return $fetch;
+      return /* UNSAFE_EXPR */ $fetch;
     }
     $map = new ImmMap([
       'id' => 1234,
@@ -33,7 +33,9 @@ final class CacheableArtcleCollection {
         ],
       ]
     ]);
-    $this->cacheProvider->save($this->id, new Element($map));
-    return $map;
+    $payload = new SampleResourcePayload($map);
+    $v = $payload->payload();
+    $this->cacheProvider->save($this->id, new Element($v));
+    return $v;
   }
 }
