@@ -5,7 +5,7 @@ Example). **Hal, Type Assert Middleware, Cors**
 ## Get Strated
 
 ```bash
-$ git clone https://github.com/ytake/nazg-sample-app.git
+$ git clone https://github.com/istyle-inc/example-hack-strict-api.git
 $ hhvm -d xdebug.enable=0 -d hhvm.jit=0 -d hhvm.php7.all=1\
  -d hhvm.hack.lang.auto_typecheck=0 $(which composer) install
 ```
@@ -13,7 +13,7 @@ $ hhvm -d xdebug.enable=0 -d hhvm.jit=0 -d hhvm.php7.all=1\
 ## Example
 
 ```bash
-$ curl http://nazg-sample-app.vagrant/
+$ curl http://example-hack-strict-api.vagrant/
 ```
 
 ### Response
